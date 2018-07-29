@@ -7,19 +7,14 @@ require_relative 'persistent_menu'
 require_relative 'greetings'
 include Facebook::Messenger
 
-# IMPORTANT! Subcribe your bot to your page
 Facebook::Messenger::Subscriptions.subscribe(access_token: ENV['ACCESS_TOKEN'])
 PersistentMenu.enable
 Greetings.enable
-
-API_URL = 'https://maps.googleapis.com/maps/api/geocode/json?address='.freeze
-REVERSE_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='.freeze
 
 IDIOMS = {
   not_found: 'There were no results. Type your destination again, please',
   ask_location: 'Type in any destination or send us your location:',
   unknown_command: 'Sorry, I did not recognize your command',
-  menu_greeting: 'What do you want to look up?'
 }.freeze
 
 MENU_REPLIES = [
@@ -46,7 +41,7 @@ TYPE_LOCATION = [{ content_type: 'location' }]
 Bot.on :postback do |postback|
   sender_id = postback.sender['id']
   case postback.payload
-  when 'START' then show_replies_menu(postback.sender['id'], MENU_REPLIES)
+  when 'START' then show__menu(postback.sender['id'])
   when 'COORDINATES'
     say(sender_id, IDIOMS[:ask_location], TYPE_LOCATION)
     show_coordinates(sender_id)
@@ -74,7 +69,7 @@ def wait_for_command
       lookup_location(sender_id)
     else
       message.reply(text: IDIOMS[:unknown_command])
-      show_replies_menu(sender_id, MENU_REPLIES)
+      show_menu(sender_id)
     end
   end
 end
@@ -86,7 +81,7 @@ def wait_for_any_input
     if message_contains_location?(message)
       handle_user_location(message)
     else
-      show_replies_menu(message.sender['id'], MENU_REPLIES)
+      show_menu(message.sender['id'])
     end
   end
 end
@@ -104,8 +99,8 @@ def say(recipient_id, text, quick_replies = nil)
 end
 
 # Display a set of quick replies that serves as a menu
-def show_replies_menu(id, quick_replies)
-  say(id, IDIOMS[:menu_greeting], quick_replies)
+def show_menu(id)
+  say(id, "Welcome!", MENU_REPLIES)
   wait_for_command
 end
 
@@ -131,9 +126,9 @@ def lookup_location(sender_id)
 end
 
 def handle_user_location(message)
-  coords = message.attachments.first['payload']['coordinates']
-  lat = coords['lat']
-  long = coords['long']
+  # coords = message.attachments.first['payload']['coordinates']
+  # lat = coords['lat']
+  # long = coords['long']
   message.type
   # make sure there is no space between lat and lng
   parsed = get_parsed_response(REVERSE_API_URL, "#{lat},#{long}")
@@ -217,7 +212,6 @@ end
 def is_text_message?(message)
   !message.text.nil?
 end
-
 
 def extract_coordinates(parsed)
   parsed['results'].first['geometry']['location']

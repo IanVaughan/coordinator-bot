@@ -16,7 +16,7 @@ class Greetings
     Facebook::Messenger::Thread.set({
       setting_type: 'greeting',
       greeting: {
-        text: 'Coordinator welcomes you!'
+        text: 'QuiqBot welcomes you!'
       },
     }, access_token: ENV['ACCESS_TOKEN'])
   end

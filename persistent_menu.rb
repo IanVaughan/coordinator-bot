@@ -1,24 +1,18 @@
 class PersistentMenu
   def self.enable
-    # Create persistent menu
     Facebook::Messenger::Thread.set({
       setting_type: 'call_to_actions',
       thread_state: 'existing_thread',
       call_to_actions: [
         {
           type: 'postback',
-          title: 'Coordinates lookup',
-          payload: 'COORDINATES'
+          title: 'New order',
+          payload: 'NEW_ORDER'
         },
         {
           type: 'postback',
-          title: 'Postal address lookup',
-          payload: 'FULL_ADDRESS'
-        },
-        {
-          type: 'postback',
-          title: 'Location lookup',
-          payload: 'LOCATION'
+          title: 'Previous order',
+          payload: 'PREVIOUS_ORDER'
         }
       ]
     }, access_token: ENV['ACCESS_TOKEN'])
